@@ -1,0 +1,129 @@
+---
+title: "Buenos Aires Real Estate Map"
+author: "Edwin R. Mutandi"
+date: "2026-04-20"
+output: html_document
+---
+
+## Overview
+
+This webpage presents an interactive map of real estate listings in Buenos Aires using the Leaflet library in R.
+
+**Dataset source:** Kaggle Buenos Aires Real Estate dataset.
+
+**Created on:** `r Sys.Date()`
+
+---
+
+## Load Required Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+library(leaflet)
+library(dplyr)
+library(readr)
+```
+
+---
+
+## Load Dataset
+
+> Ensure the CSV file is in the same folder as this R Markdown file.
+
+```{r}
+data <- read_csv("buenos-aires-real-estate.csv")
+```
+
+---
+
+## Inspect Data Structure
+
+```{r}
+glimpse(data)
+```
+
+---
+
+## Data Cleaning
+
+> Dataset already uses `lat` and `lon`, so no renaming is required.
+
+```{r}
+data_clean <- data %>%
+  filter(!is.na(lat), !is.na(lon))
+```
+
+---
+
+## Summary Statistics
+
+```{r}
+summary(data_clean)
+```
+
+---
+
+## Interactive Leaflet Map
+
+```{r}
+leaflet(data_clean) %>%
+  addProviderTiles(providers$OpenStreetMap) %>%
+  addCircleMarkers(
+    lng = ~lon,
+    lat = ~lat,
+    radius = 5,
+    stroke = FALSE,
+    fillOpacity = 0.7,
+    popup = ~paste0(
+      "<b>Price:</b> ", 
+      if ("price" %in% names(data_clean)) {
+        ifelse(is.na(price), "N/A", price)
+      } else {
+        "N/A"
+      },
+      "<br>",
+      "<b>Property Type:</b> ", 
+      if ("property_type" %in% names(data_clean)) {
+        ifelse(is.na(property_type), "N/A", property_type)
+      } else {
+        "N/A"
+      }
+    )
+  )
+```
+
+---
+
+## Notes
+
+- Each marker represents a property listing
+- Click markers to view property details
+- The map supports zooming and panning (interactive Leaflet features)
+
+---
+
+## Reproducibility
+
+To reproduce this project:
+
+1. Install required packages:
+
+```r
+install.packages(c("rmarkdown", "leaflet", "dplyr", "readr"))
+```
+
+2. Download dataset from Kaggle:  
+https://www.kaggle.com/datasets/dataenthusiast947/buenos-aires-real-estate
+
+3. Place the CSV file in your working directory
+
+4. Knit this document to HTML
+
+---
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
