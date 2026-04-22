@@ -1,7 +1,7 @@
 ---
 title: "Buenos Aires Real Estate Map"
 author: "Edwin R. Mutandi"
-date: "2026-04-20"
+date: "2026-04-22"
 output: html_document
 ---
 
@@ -37,14 +37,6 @@ data <- read_csv("buenos-aires-real-estate.csv")
 
 ---
 
-## Inspect Data Structure
-
-```{r}
-glimpse(data)
-```
-
----
-
 ## Data Cleaning
 
 > Dataset already uses `lat` and `lon`, so no renaming is required.
@@ -56,19 +48,16 @@ data_clean <- data %>%
 
 ---
 
-## Summary Statistics
-
-```{r}
-summary(data_clean)
-```
-
----
-
 ## Interactive Leaflet Map
 
 ```{r}
 leaflet(data_clean) %>%
   addProviderTiles(providers$OpenStreetMap) %>%
+  setView(
+    lng = mean(data_clean$lon, na.rm = TRUE),
+    lat = mean(data_clean$lat, na.rm = TRUE),
+    zoom = 10
+  ) %>%
   addCircleMarkers(
     lng = ~lon,
     lat = ~lat,
@@ -120,10 +109,4 @@ https://www.kaggle.com/datasets/dataenthusiast947/buenos-aires-real-estate
 
 4. Knit this document to HTML
 
----
 
-## Session Info
-
-```{r}
-sessionInfo()
-```
